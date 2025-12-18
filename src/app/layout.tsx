@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP, Noto_Serif_JP, Geist_Mono } from "next/font/google";
+import { Noto_Sans_JP, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // Fix for "localStorage.getItem is not a function" error on server side
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 if (typeof global !== 'undefined' && (global as any).localStorage) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof (global as any).localStorage.getItem !== 'function') {
       console.warn('Detected broken global.localStorage. Removing it to prevent errors.');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,24 +19,19 @@ if (typeof global !== 'undefined' && (global as any).localStorage) {
   }
 }
 
-// Japanese-friendly fonts
+// Japanese-friendly fonts with preload disabled to avoid unused preload warnings
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   display: "swap",
-});
-
-const notoSerifJP = Noto_Serif_JP({
-  variable: "--font-serif-jp",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
+  preload: false,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -50,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${notoSansJP.variable} ${notoSerifJP.variable} ${geistMono.variable} antialiased`}
+        className={`${notoSansJP.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey={undefined}>
           <LanguageProvider>
