@@ -1,0 +1,3 @@
+# Exclude Python API from Vercel deployment
+# Python API should be hosted separately (Railway, Render, Fly.io, etc.)
+api/
