@@ -365,8 +365,14 @@ const Mermaid: React.FC<MermaidProps> = ({ chart, className = '', zoomingEnabled
         setError(null);
         setSvg('');
 
+        // Preprocess chart to fix common LLM syntax errors
+        const processedChart = chart
+          .replace(/SubGraph/g, 'subgraph')
+          .replace(/\nEnd\s/g, '\nend ')
+          .replace(/\nEnd\n/g, '\nend\n');
+
         // Render the chart directly without preprocessing
-        const { svg: renderedSvg } = await mermaid.render(idRef.current, chart);
+        const { svg: renderedSvg } = await mermaid.render(idRef.current, processedChart);
 
         if (!isMounted) return;
 

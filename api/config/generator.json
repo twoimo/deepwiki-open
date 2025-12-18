@@ -37,6 +37,18 @@
           "temperature": 1.0,
           "top_p": 0.8,
           "top_k": 20
+        },
+        "gemini-3-pro-preview": {
+          "name": "gemini-3-pro-preview",
+          "temperature": 1.0,
+          "top_p": 0.8,
+          "top_k": 20
+        },
+        "gemini-3-flash-preview": {
+          "name": "gemini-3-flash-preview",
+          "temperature": 1.0,
+          "top_p": 0.8,
+          "top_k": 20
         }
       }
     },
@@ -114,24 +126,38 @@
       }
     },
     "ollama": {
-      "default_model": "qwen3:1.7b",
+      "default_model": "qwen3:latest",
       "supportsCustomModel": true,
       "models": {
-        "qwen3:1.7b": {
+        "qwen3:latest": {
           "options": {
             "temperature": 0.7,
             "top_p": 0.8,
             "num_ctx": 32000
           }
         },
-        "llama3:8b": {
+        "qwen3:30b": {
           "options": {
             "temperature": 0.7,
             "top_p": 0.8,
-            "num_ctx": 8000
+            "num_ctx": 32000
           }
         },
-        "qwen3:8b": {
+        "deepseek-r1": {
+          "options": {
+            "temperature": 0.7,
+            "top_p": 0.8,
+            "num_ctx": 32000
+          }
+        },
+        "kimi-k2:1t-cloud": {
+          "options": {
+            "temperature": 0.7,
+            "top_p": 0.8,
+            "num_ctx": 256000
+          }
+        },
+        "gpt-oss:20b": {
           "options": {
             "temperature": 0.7,
             "top_p": 0.8,
@@ -196,4 +222,3 @@
     }
   }
 }
-

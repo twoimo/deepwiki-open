@@ -17,20 +17,7 @@ const nextConfig: NextConfig = {
         fs: false,
       };
     }
-    // Optimize bundle size
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-          },
-        },
-      },
-    };
+
     return config;
   },
   async rewrites() {

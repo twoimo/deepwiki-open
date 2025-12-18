@@ -298,7 +298,7 @@ export default function RepoWikiPage() {
     try {
       const url = new URL(repoUrl);
       const hostname = url.hostname;
-      
+
       if (hostname === 'github.com' || hostname.includes('github')) {
         // GitHub URL format: https://github.com/owner/repo/blob/branch/path
         return `${repoUrl}/blob/${defaultBranch}/${filePath}`;
@@ -416,8 +416,8 @@ export default function RepoWikiPage() {
         const repoUrl = getRepoUrl(effectiveRepoInfo);
 
         // Create the prompt content - simplified to avoid message dialogs
- const promptContent =
-`You are an expert technical writer and software architect.
+        const promptContent =
+          `You are an expert technical writer and software architect.
 Your task is to generate a comprehensive and accurate technical wiki page in Markdown format about a specific feature, system, or module within a given software project.
 
 You will be given:
@@ -470,18 +470,20 @@ Based ONLY on the content of the \`[RELEVANT_SOURCE_FILES]\`:
            - -) solid line with open arrow (async message, fire-and-forget)
            - --) dotted line with open arrow (async response)
            - Examples: A->>B: Request, B-->>A: Response, A->xB: Error, A-)B: Async event
-         - Use +/- suffix for activation boxes: A->>+B: Start (activates B), B-->>-A: End (deactivates B)
-         - Group related participants using "box": box GroupName ... end
-         - Use structural elements for complex flows:
-           - loop LoopText ... end (for iterations)
-           - alt ConditionText ... else ... end (for conditionals)
-           - opt OptionalText ... end (for optional flows)
-           - par ParallelText ... and ... end (for parallel actions)
-           - critical CriticalText ... option ... end (for critical regions)
-           - break BreakText ... end (for breaking flows/exceptions)
-         - Add notes for clarification: "Note over A,B: Description", "Note right of A: Detail"
-         - Use autonumber directive to add sequence numbers to messages
-         - NEVER use flowchart-style labels like A--|label|-->B. Always use a colon for labels: A->>B: My Label
+          - Use +/- suffix for activation boxes: A->>+B: Start (activates B), B-->>-A: End (deactivates B)
+          - IMPORTANT: Mermaid keywords are case-sensitive. ALWAYS use lowercase for: subgraph, end, participant, activate, deactivate, loop, alt, opt, par, critical, break, rect.
+          - NEVER use "SubGraph" or "End" (mismatched case). Correct example: "subgraph Title" ... "end".
+          - Group related participants using "box": box GroupName ... end
+          - Use structural elements for complex flows:
+            - loop LoopText ... end (for iterations)
+            - alt ConditionText ... else ... end (for conditionals)
+            - opt OptionalText ... end (for optional flows)
+            - par ParallelText ... and ... end (for parallel actions)
+            - critical CriticalText ... option ... end (for critical regions)
+            - break BreakText ... end (for breaking flows/exceptions)
+          - Add notes for clarification: "Note over A,B: Description", "Note right of A: Detail"
+          - Use autonumber directive to add sequence numbers to messages
+          - NEVER use flowchart-style labels like A--|label|-->B. Always use a colon for labels: A->>B: My Label
 
 4.  **Tables:**
     *   Use Markdown tables to summarize information such as:
@@ -509,15 +511,15 @@ Based ONLY on the content of the \`[RELEVANT_SOURCE_FILES]\`:
 
 IMPORTANT: Generate the content in ${language === 'en' ? 'English' :
             language === 'ja' ? 'Japanese (日本語)' :
-            language === 'zh' ? 'Mandarin Chinese (中文)' :
-            language === 'zh-tw' ? 'Traditional Chinese (繁體中文)' :
-            language === 'es' ? 'Spanish (Español)' :
-            language === 'kr' ? 'Korean (한국어)' :
-            language === 'vi' ? 'Vietnamese (Tiếng Việt)' : 
-            language === "pt-br" ? "Brazilian Portuguese (Português Brasileiro)" :
-            language === "fr" ? "Français (French)" :
-            language === "ru" ? "Русский (Russian)" :
-            'English'} language.
+              language === 'zh' ? 'Mandarin Chinese (中文)' :
+                language === 'zh-tw' ? 'Traditional Chinese (繁體中文)' :
+                  language === 'es' ? 'Spanish (Español)' :
+                    language === 'kr' ? 'Korean (한국어)' :
+                      language === 'vi' ? 'Vietnamese (Tiếng Việt)' :
+                        language === "pt-br" ? "Brazilian Portuguese (Português Brasileiro)" :
+                          language === "fr" ? "Français (French)" :
+                            language === "ru" ? "Русский (Russian)" :
+                              'English'} language.
 
 Remember:
 - Ground every claim in the provided source files.
@@ -545,7 +547,7 @@ Remember:
         try {
           // Create WebSocket URL from the server base URL
           const serverBaseUrl = process.env.SERVER_BASE_URL || 'http://localhost:8001';
-          const wsBaseUrl = serverBaseUrl.replace(/^http/, 'ws')? serverBaseUrl.replace(/^https/, 'wss'): serverBaseUrl.replace(/^http/, 'ws');
+          const wsBaseUrl = serverBaseUrl.replace(/^http/, 'ws') ? serverBaseUrl.replace(/^https/, 'wss') : serverBaseUrl.replace(/^http/, 'ws');
           const wsUrl = `${wsBaseUrl}/ws/chat`;
 
           // Create a new WebSocket connection
@@ -695,6 +697,8 @@ Remember:
       return;
     }
 
+    let responseText = '';
+
     try {
       setStructureRequestInProgress(true);
       setLoadingMessage(messages.loading?.determiningStructure || 'Determining wiki structure...');
@@ -709,7 +713,7 @@ Remember:
         type: effectiveRepoInfo.type,
         messages: [{
           role: 'user',
-content: `Analyze this GitHub repository ${owner}/${repo} and create a wiki structure for it.
+          content: `Analyze this GitHub repository ${owner}/${repo} and create a wiki structure for it.
 
 1. The complete file tree of the project:
 <file_tree>
@@ -724,16 +728,16 @@ ${readme}
 I want to create a wiki for this repository. Determine the most logical structure for a wiki based on the repository's content.
 
 IMPORTANT: The wiki content will be generated in ${language === 'en' ? 'English' :
-            language === 'ja' ? 'Japanese (日本語)' :
-            language === 'zh' ? 'Mandarin Chinese (中文)' :
-            language === 'zh-tw' ? 'Traditional Chinese (繁體中文)' :
-            language === 'es' ? 'Spanish (Español)' :
-            language === 'kr' ? 'Korean (한国語)' :
-            language === 'vi' ? 'Vietnamese (Tiếng Việt)' :
-            language === "pt-br" ? "Brazilian Portuguese (Português Brasileiro)" :
-            language === "fr" ? "Français (French)" :
-            language === "ru" ? "Русский (Russian)" :
-            'English'} language.
+              language === 'ja' ? 'Japanese (日本語)' :
+                language === 'zh' ? 'Mandarin Chinese (中文)' :
+                  language === 'zh-tw' ? 'Traditional Chinese (繁體中文)' :
+                    language === 'es' ? 'Spanish (Español)' :
+                      language === 'kr' ? 'Korean (한国語)' :
+                        language === 'vi' ? 'Vietnamese (Tiếng Việt)' :
+                          language === "pt-br" ? "Brazilian Portuguese (Português Brasileiro)" :
+                            language === "fr" ? "Français (French)" :
+                              language === "ru" ? "Русский (Russian)" :
+                                'English'} language.
 
 When designing the wiki structure, include pages that would benefit from visual diagrams, such as:
 - Architecture overviews
@@ -837,12 +841,11 @@ IMPORTANT:
       addTokensToRequestBody(requestBody, currentToken, effectiveRepoInfo.type, selectedProviderState, selectedModelState, isCustomSelectedModelState, customSelectedModelState, language, modelExcludedDirs, modelExcludedFiles, modelIncludedDirs, modelIncludedFiles);
 
       // Use WebSocket for communication
-      let responseText = '';
 
       try {
         // Create WebSocket URL from the server base URL
         const serverBaseUrl = process.env.SERVER_BASE_URL || 'http://localhost:8001';
-        const wsBaseUrl = serverBaseUrl.replace(/^http/, 'ws')? serverBaseUrl.replace(/^https/, 'wss'): serverBaseUrl.replace(/^http/, 'ws');
+        const wsBaseUrl = serverBaseUrl.replace(/^http/, 'ws') ? serverBaseUrl.replace(/^https/, 'wss') : serverBaseUrl.replace(/^http/, 'ws');
         const wsUrl = `${wsBaseUrl}/ws/chat`;
 
         // Create a new WebSocket connection
@@ -929,26 +932,47 @@ IMPORTANT:
         }
       }
 
-      if(responseText.includes('Error preparing retriever: Environment variable OPENAI_API_KEY must be set')) {
-         setEmbeddingError(true);
-         throw new Error('OPENAI_API_KEY environment variable is not set. Please configure your OpenAI API key.');
-       }
-
-       if(responseText.includes('Ollama model') && responseText.includes('not found')) {
-         setEmbeddingError(true);
-         throw new Error('The specified Ollama embedding model was not found. Please ensure the model is installed locally or select a different embedding model in the configuration.');
-       }
-
-        // Clean up markdown delimiters
-      responseText = responseText.replace(/^```(?:xml)?\s*/i, '').replace(/```\s*$/i, '');
-
-      // Extract wiki structure from response
-      const xmlMatch = responseText.match(/<wiki_structure>[\s\S]*?<\/wiki_structure>/m);
-      if (!xmlMatch) {
-        throw new Error('No valid XML found in response');
+      if (responseText.includes('Error preparing retriever: Environment variable OPENAI_API_KEY must be set')) {
+        setEmbeddingError(true);
+        throw new Error('OPENAI_API_KEY environment variable is not set. Please configure your OpenAI API key.');
       }
 
-      let xmlText = xmlMatch[0];
+      if (responseText.includes('Ollama model') && responseText.includes('not found')) {
+        setEmbeddingError(true);
+        throw new Error('The specified Ollama embedding model was not found. Please ensure the model is installed locally or select a different embedding model in the configuration.');
+      }
+
+      // Check for rate limits/quota errors
+      if (responseText.includes('429') || responseText.toLowerCase().includes('quota exceeded')) {
+        throw new Error('API Quota Exceeded: The AI model usage limit has been reached. Please try again later.');
+      }
+
+      // Robust XML Extraction
+      const startTag = '<wiki_structure>';
+      const endTag = '</wiki_structure>';
+
+      let xmlText = '';
+      const startIndex = responseText.indexOf(startTag);
+
+      if (startIndex !== -1) {
+        const endIndex = responseText.lastIndexOf(endTag);
+        if (endIndex !== -1 && endIndex > startIndex) {
+          // Found complete XML
+          xmlText = responseText.substring(startIndex, endIndex + endTag.length);
+        } else {
+          // Case where closing tag is missing (possibly truncated)
+          console.warn('XML appears truncated, attempting to parse incomplete response');
+          xmlText = responseText.substring(startIndex) + endTag;
+        }
+      } else {
+        // Fallback checks
+        const cleaned = responseText.replace(/^```(?:xml)?\s*/i, '').replace(/```\s*$/i, '');
+        if (cleaned.trim().startsWith('<wiki_structure>')) {
+          xmlText = cleaned;
+        } else {
+          throw new Error('No valid XML found in response');
+        }
+      }
       xmlText = xmlText.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
       // Try parsing with DOMParser
       const parser = new DOMParser();
@@ -1155,6 +1179,9 @@ IMPORTANT:
 
     } catch (error) {
       console.error('Error determining wiki structure:', error);
+      if (error instanceof Error && error.message === 'No valid XML found in response') {
+        console.error('Raw response text dump:', responseText);
+      }
       setIsLoading(false);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
       setLoadingMessage(undefined);
@@ -1218,16 +1245,16 @@ IMPORTANT:
           if (!repoUrl) {
             return 'https://api.github.com'; // Default to public GitHub
           }
-          
+
           try {
             const url = new URL(repoUrl);
             const hostname = url.hostname;
-            
+
             // If it's the public GitHub, use the standard API URL
             if (hostname === 'github.com') {
               return 'https://api.github.com';
             }
-            
+
             // For GitHub Enterprise, use the enterprise API URL format
             // GitHub Enterprise API URL format: https://github.company.com/api/v3
             return `${url.protocol}//${hostname}/api/v3`;
@@ -1243,7 +1270,7 @@ IMPORTANT:
           const repoInfoResponse = await fetch(`${githubApiBaseUrl}/repos/${owner}/${repo}`, {
             headers: createGithubHeaders(currentToken)
           });
-          
+
           if (repoInfoResponse.ok) {
             const repoData = await repoInfoResponse.json();
             defaultBranchLocal = repoData.default_branch;
@@ -1256,7 +1283,7 @@ IMPORTANT:
         }
 
         // Create list of branches to try, prioritizing the actual default branch
-        const branchesToTry = defaultBranchLocal 
+        const branchesToTry = defaultBranchLocal
           ? [defaultBranchLocal, 'main', 'master'].filter((branch, index, arr) => arr.indexOf(branch) === index)
           : ['main', 'master'];
 
@@ -1276,11 +1303,20 @@ IMPORTANT:
               break;
             } else {
               const errorData = await response.text();
+
+              if (response.status === 403 && errorData.includes("Resource not accessible by personal access token")) {
+                throw new Error(`GitHub Permission Error: Your token lacks the 'Contents' permission. Please enable 'Contents' (Read-only) for your token. For SSO-enabled organizations, ensure you have authorized the token.`);
+              }
+
               apiErrorDetails = `Status: ${response.status}, Response: ${errorData}`;
               console.error(`Error fetching repository structure: ${apiErrorDetails}`);
             }
           } catch (err) {
-            console.error(`Network error fetching branch ${branch}:`, err);
+            console.error(`Error fetching branch ${branch}:`, err);
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            if (errorMessage.includes("GitHub Permission Error")) {
+              throw err;
+            }
           }
         }
 
@@ -1353,13 +1389,13 @@ IMPORTANT:
           // Step 2: Paginate to fetch full file tree
           let page = 1;
           let morePages = true;
-          
+
           while (morePages) {
             const apiUrl = `${projectInfoUrl}/repository/tree?recursive=true&per_page=100&page=${page}`;
             const response = await fetch(apiUrl, { headers });
 
             if (!response.ok) {
-                const errorData = await response.text();
+              const errorData = await response.text();
               throw new Error(`Error fetching GitLab repository structure (page ${page}): ${errorData}`);
             }
 
@@ -1369,31 +1405,31 @@ IMPORTANT:
             const nextPage = response.headers.get('x-next-page');
             morePages = !!nextPage;
             page = nextPage ? parseInt(nextPage, 10) : page + 1;
-        }
+          }
 
           if (!Array.isArray(filesData) || filesData.length === 0) {
             throw new Error('Could not fetch repository structure. Repository might be empty or inaccessible.');
-        }
+          }
 
           // Step 3: Format file paths
-        fileTreeData = filesData
-          .filter((item: { type: string; path: string }) => item.type === 'blob')
-          .map((item: { type: string; path: string }) => item.path)
-          .join('\n');
+          fileTreeData = filesData
+            .filter((item: { type: string; path: string }) => item.type === 'blob')
+            .map((item: { type: string; path: string }) => item.path)
+            .join('\n');
 
           // Step 4: Try to fetch README.md content
           const readmeUrl = `${projectInfoUrl}/repository/files/README.md/raw`;
-            try {
+          try {
             const readmeResponse = await fetch(readmeUrl, { headers });
-              if (readmeResponse.ok) {
-                readmeContent = await readmeResponse.text();
-                console.log('Successfully fetched GitLab README.md');
-              } else {
+            if (readmeResponse.ok) {
+              readmeContent = await readmeResponse.text();
+              console.log('Successfully fetched GitLab README.md');
+            } else {
               console.warn(`Could not fetch GitLab README.md status: ${readmeResponse.status}`);
-              }
-            } catch (err) {
-            console.warn(`Error fetching GitLab README.md:`, err);
             }
+          } catch (err) {
+            console.warn(`Error fetching GitLab README.md:`, err);
+          }
         } catch (err) {
           console.error("Error during GitLab repository tree retrieval:", err);
           throw err;
@@ -1599,7 +1635,7 @@ IMPORTANT:
         params.append('excluded_files', modelExcludedFiles);
       }
 
-      if(authRequired && !authCode) {
+      if (authRequired && !authCode) {
         setIsLoading(false);
         console.error("Authorization code is required");
         setError('Authorization code is required');
@@ -1622,7 +1658,7 @@ IMPORTANT:
         console.warn(`Failed to clear server-side wiki cache (status: ${response.status}): ${errorText}. Proceeding with refresh anyway.`);
         // Optionally, inform the user about the cache clear failure but that refresh will still attempt
         // setError(\`Cache clear failed: ${errorText}. Trying to refresh...\`);
-        if(response.status == 401) {
+        if (response.status == 401) {
           setIsLoading(false);
           setLoadingMessage(undefined);
           setError('Failed to validate the authorization code');
@@ -1653,8 +1689,10 @@ IMPORTANT:
     console.log('Refreshing wiki. Server cache will be overwritten upon new generation if not cleared.');
 
     // Clear the localStorage cache (if any remnants or if it was used before this change)
-    const localStorageCacheKey = getCacheKey(effectiveRepoInfo.owner, effectiveRepoInfo.repo, effectiveRepoInfo.type, language, isComprehensiveView);
-    localStorage.removeItem(localStorageCacheKey);
+    if (typeof window !== 'undefined') {
+      const localStorageCacheKey = getCacheKey(effectiveRepoInfo.owner, effectiveRepoInfo.repo, effectiveRepoInfo.type, language, isComprehensiveView);
+      localStorage.removeItem(localStorageCacheKey);
+    }
 
     // Reset cache loaded flag
     cacheLoadedSuccessfully.current = false;
@@ -1708,15 +1746,15 @@ IMPORTANT:
             const cachedData = await response.json(); // Returns null if no cache
             if (cachedData && cachedData.wiki_structure && cachedData.generated_pages && Object.keys(cachedData.generated_pages).length > 0) {
               console.log('Using server-cached wiki data');
-              if(cachedData.model) {
+              if (cachedData.model) {
                 setSelectedModelState(cachedData.model);
               }
-              if(cachedData.provider) {
+              if (cachedData.provider) {
                 setSelectedProviderState(cachedData.provider);
               }
 
               // Update repoInfo
-              if(cachedData.repo) {
+              if (cachedData.repo) {
                 setEffectiveRepoInfo(cachedData.repo);
               } else if (cachedData.repo_url && !effectiveRepoInfo.repoUrl) {
                 const updatedRepoInfo = { ...effectiveRepoInfo, repoUrl: cachedData.repo_url };
@@ -1785,7 +1823,7 @@ IMPORTANT:
                 for (const [categoryId, categoryPages] of pageClusters.entries()) {
                   if (categoryPages.length > 0) {
                     const category = categories.find(c => c.id === categoryId) ||
-                                    { id: categoryId, title: categoryId === 'other' ? 'Other' : categoryId.charAt(0).toUpperCase() + categoryId.slice(1) };
+                      { id: categoryId, title: categoryId === 'other' ? 'Other' : categoryId.charAt(0).toUpperCase() + categoryId.slice(1) };
 
                     const sectionId = `section-${categoryId}`;
                     sections.push({
@@ -1844,7 +1882,7 @@ IMPORTANT:
               setGeneratedPages(cachedData.generated_pages);
               setCurrentPageId(cachedStructure.pages.length > 0 ? cachedStructure.pages[0].id : undefined);
               setIsLoading(false);
-              setEmbeddingError(false); 
+              setEmbeddingError(false);
               setLoadingMessage(undefined);
               cacheLoadedSuccessfully.current = true;
               return; // Exit if cache is successfully loaded
@@ -1879,11 +1917,11 @@ IMPORTANT:
   useEffect(() => {
     const saveCache = async () => {
       if (!isLoading &&
-          !error &&
-          wikiStructure &&
-          Object.keys(generatedPages).length > 0 &&
-          Object.keys(generatedPages).length >= wikiStructure.pages.length &&
-          !cacheLoadedSuccessfully.current) {
+        !error &&
+        wikiStructure &&
+        Object.keys(generatedPages).length > 0 &&
+        Object.keys(generatedPages).length >= wikiStructure.pages.length &&
+        !cacheLoadedSuccessfully.current) {
 
         const allPagesHaveContent = wikiStructure.pages.every(page =>
           generatedPages[page.id] && generatedPages[page.id].content && generatedPages[page.id].content !== 'Loading...');
@@ -1983,10 +2021,10 @@ IMPORTANT:
                   {language === 'ja'
                     ? `${wikiStructure.pages.length}ページ中${wikiStructure.pages.length - pagesInProgress.size}ページ完了`
                     : messages.repoPage?.pagesCompleted
-                        ? messages.repoPage.pagesCompleted
-                            .replace('{completed}', (wikiStructure.pages.length - pagesInProgress.size).toString())
-                            .replace('{total}', wikiStructure.pages.length.toString())
-                        : `${wikiStructure.pages.length - pagesInProgress.size} of ${wikiStructure.pages.length} pages completed`}
+                      ? messages.repoPage.pagesCompleted
+                        .replace('{completed}', (wikiStructure.pages.length - pagesInProgress.size).toString())
+                        .replace('{total}', wikiStructure.pages.length.toString())
+                      : `${wikiStructure.pages.length - pagesInProgress.size} of ${wikiStructure.pages.length} pages completed`}
                 </p>
 
                 {/* Show list of in-progress pages */}
@@ -2005,8 +2043,8 @@ IMPORTANT:
                           {language === 'ja'
                             ? `...他に${pagesInProgress.size - 3}ページ`
                             : messages.repoPage?.andMorePages
-                                ? messages.repoPage.andMorePages.replace('{count}', (pagesInProgress.size - 3).toString())
-                                : `...and ${pagesInProgress.size - 3} more`}
+                              ? messages.repoPage.andMorePages.replace('{count}', (pagesInProgress.size - 3).toString())
+                              : `...and ${pagesInProgress.size - 3} more`}
                         </li>
                       )}
                     </ul>

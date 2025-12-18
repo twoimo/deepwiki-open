@@ -4,6 +4,19 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
+// Fix for "localStorage.getItem is not a function" error on server side
+if (typeof global !== 'undefined' && (global as any).localStorage) {
+  try {
+    if (typeof (global as any).localStorage.getItem !== 'function') {
+      console.warn('Detected broken global.localStorage. Removing it to prevent errors.');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (global as any).localStorage;
+    }
+  } catch (e) {
+    console.error('Failed to patch global.localStorage:', e);
+  }
+}
+
 // Japanese-friendly fonts
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-geist-sans",
@@ -39,7 +52,7 @@ export default function RootLayout({
       <body
         className={`${notoSansJP.variable} ${notoSerifJP.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey={undefined}>
           <LanguageProvider>
             {children}
           </LanguageProvider>

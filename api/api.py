@@ -186,9 +186,11 @@ async def get_model_config():
         for provider_id, provider_config in configs["providers"].items():
             models = []
             # Add models from config
-            for model_id in provider_config["models"].keys():
+            # Add models from config
+            for model_id, model_params in provider_config["models"].items():
                 # Get a more user-friendly display name if possible
-                models.append(Model(id=model_id, name=model_id))
+                display_name = model_params.get("name", model_id)
+                models.append(Model(id=model_id, name=display_name))
 
             # Add provider with its models
             providers.append(

@@ -81,6 +81,7 @@ export default function Home() {
 
   const loadConfigFromCache = (repoUrl: string) => {
     if (!repoUrl) return;
+    if (typeof window === 'undefined') return;
     try {
       const cachedConfigs = localStorage.getItem(REPO_CONFIG_CACHE_KEY);
       if (cachedConfigs) {
@@ -111,7 +112,7 @@ export default function Home() {
     if (newRepoUrl.trim() === "") {
       // Optionally reset fields if input is cleared
     } else {
-        loadConfigFromCache(newRepoUrl);
+      loadConfigFromCache(newRepoUrl);
     }
   };
 
@@ -266,8 +267,8 @@ export default function Home() {
 
   const validateAuthCode = async () => {
     try {
-      if(authRequired) {
-        if(!authCode) {
+      if (authRequired) {
+        if (!authCode) {
           return false;
         }
         const response = await fetch('/api/auth/validate', {
@@ -275,7 +276,7 @@ export default function Home() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({'code': authCode})
+          body: JSON.stringify({ 'code': authCode })
         });
         if (!response.ok) {
           return false;
@@ -293,7 +294,7 @@ export default function Home() {
 
     // Check authorization code
     const validation = await validateAuthCode();
-    if(!validation) {
+    if (!validation) {
       setError(`Failed to validate the authorization code`);
       console.error(`Failed to validate the authorization code`);
       setIsConfigModalOpen(false);
@@ -307,24 +308,26 @@ export default function Home() {
     }
 
     try {
-      const currentRepoUrl = repositoryInput.trim();
-      if (currentRepoUrl) {
-        const existingConfigs = JSON.parse(localStorage.getItem(REPO_CONFIG_CACHE_KEY) || '{}');
-        const configToSave = {
-          selectedLanguage,
-          isComprehensiveView,
-          provider,
-          model,
-          isCustomModel,
-          customModel,
-          selectedPlatform,
-          excludedDirs,
-          excludedFiles,
-          includedDirs,
-          includedFiles,
-        };
-        existingConfigs[currentRepoUrl] = configToSave;
-        localStorage.setItem(REPO_CONFIG_CACHE_KEY, JSON.stringify(existingConfigs));
+      if (typeof window !== 'undefined') {
+        const currentRepoUrl = repositoryInput.trim();
+        if (currentRepoUrl) {
+          const existingConfigs = JSON.parse(localStorage.getItem(REPO_CONFIG_CACHE_KEY) || '{}');
+          const configToSave = {
+            selectedLanguage,
+            isComprehensiveView,
+            provider,
+            model,
+            isCustomModel,
+            customModel,
+            selectedPlatform,
+            excludedDirs,
+            excludedFiles,
+            includedDirs,
+            includedFiles,
+          };
+          existingConfigs[currentRepoUrl] = configToSave;
+          localStorage.setItem(REPO_CONFIG_CACHE_KEY, JSON.stringify(existingConfigs));
+        }
       }
     } catch (error) {
       console.error('Error saving config to localStorage:', error);
@@ -530,67 +533,67 @@ export default function Home() {
                 </p>
               </div>
 
-          {/* Quick Start section - redesigned for better spacing */}
-          <div
-            className="w-full max-w-2xl mb-10 bg-[var(--accent-primary)]/5 border border-[var(--accent-primary)]/20 rounded-lg p-5">
-            <h3 className="text-sm font-semibold text-[var(--accent-primary)] mb-3 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {t('home.quickStart')}
-            </h3>
-            <p className="text-sm text-[var(--foreground)] mb-3">{t('home.enterRepoUrl')}</p>
-            <div className="grid grid-cols-1 gap-3 text-xs text-[var(--muted)]">
+              {/* Quick Start section - redesigned for better spacing */}
               <div
-                className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
-              >https://github.com/AsyncFuncAI/deepwiki-open
-              </div>
-              <div
-                className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
-              >https://gitlab.com/gitlab-org/gitlab
-              </div>
-              <div
-                className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
-              >AsyncFuncAI/deepwiki-open
-              </div>
-              <div
-                className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
-              >https://bitbucket.org/atlassian/atlaskit
-              </div>
-            </div>
-          </div>
-
-          {/* Visualization section - improved for better visibility */}
-          <div
-            className="w-full max-w-2xl mb-8 bg-[var(--background)]/70 rounded-lg p-6 border border-[var(--border-color)]">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-[var(--accent-primary)] flex-shrink-0 mt-0.5 sm:mt-0" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <h3 className="text-base font-semibold text-[var(--foreground)] font-serif">{t('home.advancedVisualization')}</h3>
-            </div>
-            <p className="text-sm text-[var(--foreground)] mb-5 leading-relaxed">
-              {t('home.diagramDescription')}
-            </p>
-
-            {/* Diagrams with improved layout */}
-            <div className="grid grid-cols-1 gap-6">
-              <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--border-color)] shadow-custom">
-                <h4 className="text-sm font-medium text-[var(--foreground)] mb-3 font-serif">{t('home.flowDiagram')}</h4>
-                <Mermaid chart={DEMO_FLOW_CHART} />
+                className="w-full max-w-2xl mb-10 bg-[var(--accent-primary)]/5 border border-[var(--accent-primary)]/20 rounded-lg p-5">
+                <h3 className="text-sm font-semibold text-[var(--accent-primary)] mb-3 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {t('home.quickStart')}
+                </h3>
+                <p className="text-sm text-[var(--foreground)] mb-3">{t('home.enterRepoUrl')}</p>
+                <div className="grid grid-cols-1 gap-3 text-xs text-[var(--muted)]">
+                  <div
+                    className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
+                  >https://github.com/AsyncFuncAI/deepwiki-open
+                  </div>
+                  <div
+                    className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
+                  >https://gitlab.com/gitlab-org/gitlab
+                  </div>
+                  <div
+                    className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
+                  >AsyncFuncAI/deepwiki-open
+                  </div>
+                  <div
+                    className="bg-[var(--background)]/70 p-3 rounded border border-[var(--border-color)] font-mono overflow-x-hidden whitespace-nowrap"
+                  >https://bitbucket.org/atlassian/atlaskit
+                  </div>
+                </div>
               </div>
 
-              <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--border-color)] shadow-custom">
-                <h4 className="text-sm font-medium text-[var(--foreground)] mb-3 font-serif">{t('home.sequenceDiagram')}</h4>
-                <Mermaid chart={DEMO_SEQUENCE_CHART} />
+              {/* Visualization section - improved for better visibility */}
+              <div
+                className="w-full max-w-2xl mb-8 bg-[var(--background)]/70 rounded-lg p-6 border border-[var(--border-color)]">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-[var(--accent-primary)] flex-shrink-0 mt-0.5 sm:mt-0" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <h3 className="text-base font-semibold text-[var(--foreground)] font-serif">{t('home.advancedVisualization')}</h3>
+                </div>
+                <p className="text-sm text-[var(--foreground)] mb-5 leading-relaxed">
+                  {t('home.diagramDescription')}
+                </p>
+
+                {/* Diagrams with improved layout */}
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--border-color)] shadow-custom">
+                    <h4 className="text-sm font-medium text-[var(--foreground)] mb-3 font-serif">{t('home.flowDiagram')}</h4>
+                    <Mermaid chart={DEMO_FLOW_CHART} />
+                  </div>
+
+                  <div className="bg-[var(--card-bg)] p-4 rounded-lg border border-[var(--border-color)] shadow-custom">
+                    <h4 className="text-sm font-medium text-[var(--foreground)] mb-3 font-serif">{t('home.sequenceDiagram')}</h4>
+                    <Mermaid chart={DEMO_SEQUENCE_CHART} />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
             </>
           )}
         </div>
